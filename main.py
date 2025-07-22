@@ -7,10 +7,10 @@ client = OpenAI(
 
 # Sử dụng cho completions
 completion_response = client.chat.completions.create(
-    model="qwen2.5",  # tên bạn đã dùng ở --served-model-name
+    model="qwen2.5",  # tên đã dùng ở --served-model-name
     messages=[
         {"role": "system", "content": "你是一位得力助手"}, # You are a help full assistant
-        {"role": "user", "content": "用中文介绍越南的首都。"} # Introduce the capital of Vietnam in Chinese.
+        {"role": "user", "content": "介绍越南这个国家。必须用中文回答"} # Introduce Vietnam country. You must be answer in Chinese
     ],
     extra_body={
         "logits_processors": [
