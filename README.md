@@ -19,11 +19,15 @@ A custom `logits processor` for vLLM to **block Chinese token generation** durin
 ## 🗂️ Project Structure
 ```bash
 llm-block-chinese/
-├── llm_block_chinese/
-│   └── logits_processor.py      # Main logits processor
-├── main.py                      # Prompt test script
-├── requirements.txt
-└── README.md
+├── llm_block_chinese/           # Contains the main logits processor code
+│   └── logits_processor.py      # filter_chinese() implementation
+├── .gitignore                   # Git ignore rules
+├── .python-version              # Python version for uv environment
+├── README.md                    # Project documentation
+├── main.py                      # Script to send test prompts
+├── pyproject.toml               # Project dependencies and uv config
+├── uv.lock                      # Locked dependency versions (managed by uv)
+
 ```
 
 ##  Yêu cầu
