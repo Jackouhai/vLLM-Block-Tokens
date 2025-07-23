@@ -4,7 +4,7 @@ A custom `logits processor` for vLLM to **block Chinese token generation** durin
 
 ---
 
-##  Tính năng
+##  Features
 
 ✅ Automatically identifies Chinese tokens in the vocabulary.
 
@@ -65,6 +65,16 @@ python -m vllm.entrypoints.openai.api_server \
   --served-model-name qwen2.5 \
   --port 8000 \
   --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese"
+```
+If not enough vram:
+```bash
+source .venv/bin/activate
+python -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --served-model-name qwen2.5 \
+  --port 8000 \
+  --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese" \
+  --cpu-offload-gb 2
 ```
 
 
