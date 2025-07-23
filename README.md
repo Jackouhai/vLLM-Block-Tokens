@@ -66,7 +66,7 @@ python -m vllm.entrypoints.openai.api_server \
   --port 8000 \
   --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese"
 ```
-If not enough vram:
+If not enough vram (e.g., NVIDIA T600-Laptop):
 ```bash
 source .venv/bin/activate
 python -m vllm.entrypoints.openai.api_server \
@@ -74,7 +74,8 @@ python -m vllm.entrypoints.openai.api_server \
   --served-model-name qwen2.5 \
   --port 8000 \
   --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese" \
-  --cpu-offload-gb 2
+  --cpu-offload-gb 2 \
+  --max-model-len 8192
 ```
 
 
