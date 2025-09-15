@@ -75,8 +75,9 @@ python -m vllm.entrypoints.openai.api_server \
   --port 8000 \
   --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese" \
   --cpu-offload-gb 2 \
-  --max-model-len 8192
+  --max-model-len 2048
 ```
+
 
 
 
