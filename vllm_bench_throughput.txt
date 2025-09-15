@@ -1,0 +1,93 @@
+source .venv/bin/activate
+vllm bench throughput \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --dataset-name sonnet \
+  --dataset-path vllm/benchmarks/sonnet.txt \
+  --num-prompts 50 \
+  --input-len 128 \
+  --output-len 64 \
+  --dtype float16 \
+  --max-model-len 2048 \
+  --gpu-memory-utilization 0.7 \
+  --cpu-offload-gb 3 \
+  --swap-space 8 \
+  --block-size 16 \
+  --max-num-seqs 16 \
+  --logits-processor llm_block_chinese.logits_processor.filter_chinese \
+  --output-json throughput_bench_results_with_logit_processors.json
+
+
+
+source .venv/bin/activate
+vllm bench throughput \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --dataset-name sonnet \
+  --dataset-path vllm/benchmarks/sonnet.txt \
+  --num-prompts 50 \
+  --input-len 128 \
+  --output-len 64 \
+  --dtype float16 \
+  --max-model-len 2048 \
+  --gpu-memory-utilization 0.7 \
+  --cpu-offload-gb 3 \
+  --swap-space 8 \
+  --block-size 16 \
+  --max-num-seqs 16 \
+  --output-json throughput_bench_results_without_logit_processors.json
+
+
+source .venv/bin/activate
+vllm bench latency \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --input-len 128 \
+  --output-len 64 \
+  --dtype float16 \
+  --max-model-len 2048 \
+  --gpu-memory-utilization 0.7 \
+  --cpu-offload-gb 3 \
+  --swap-space 8 \
+  --block-size 16 \
+  --max-num-seqs 16 \
+  --logits-processor llm_block_chinese.logits_processor.filter_chinese \
+  --output-json latency_bench_results_with_logits_processor.json
+
+
+source .venv/bin/activate
+vllm bench latency \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --input-len 128 \
+  --output-len 64 \
+  --dtype float16 \
+  --max-model-len 2048 \
+  --gpu-memory-utilization 0.7 \
+  --cpu-offload-gb 3 \
+  --swap-space 8 \
+  --block-size 16 \
+  --max-num-seqs 16 \
+  --output-json latency_bench_results_without_logits_processor.json
+
+
+
+source .venv/bin/activate
+python -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --served-model-name qwen2.5 \
+  --port 8000 \
+  --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese" \
+  --cpu-offload-gb 2 \
+  --max-model-len 2048
+
+
+source .venv/bin/activate
+vllm bench serve \
+  --backend vllm \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --port 8000 \
+  --endpoint /v1/completions \
+  --dataset-name sharegpt \
+  --dataset-path /home/bocchi/Work/vLLM-Block-Tokens/ShareGPT_V3_unfiltered_cleaned_split.json \
+  --num-prompts 50 \
+  --max-concurrency 16 \
+  --save-result \
+  --result-filename bench_results_chat.json\
+  --custom-skip-chat-template
