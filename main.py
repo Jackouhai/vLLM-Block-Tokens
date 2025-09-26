@@ -1,23 +1,50 @@
+# from openai import OpenAI
+
+# client = OpenAI(
+#     base_url="http://localhost:8000/v1",
+#     api_key="EMPTY"
+# )
+
+# # Sử dụng cho completions
+# completion_response = client.chat.completions.create(
+#     model="qwen2.5",  # tên đã dùng ở --served-model-name
+#     messages=[
+#         {"role": "system", "content": "你是一位得力助手"}, # You are a help full assistant
+#         {"role": "user", "content": "介绍越南这个国家。"} # Introduce Vietnam country. You must be answer in Chinese
+#     ]
+
+# )
+# print(completion_response.choices[0].message.content)
+
+
 from openai import OpenAI
 
+# Modify OpenAI's API key and API base to use vLLM's API server.
+openai_api_key = "EMPTY"
+openai_api_base = "http://localhost:8000/v1"
+
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="EMPTY"
+    # defaults to os.environ.get("OPENAI_API_KEY")
+    api_key=openai_api_key,
+    base_url=openai_api_base,
 )
 
-# Sử dụng cho completions
-completion_response = client.chat.completions.create(
-    model="qwen2.5",  # tên đã dùng ở --served-model-name
+model = "qwen2.5"
+
+chat_completion = client.chat.completions.create(
     messages=[
-        {"role": "system", "content": "你是一位得力助手"}, # You are a help full assistant
-        {"role": "user", "content": "介绍越南这个国家。必须用中文回答"} # Introduce Vietnam country. You must be answer in Chinese
+        {
+            "role": "system",
+            "content": "你是一位得力助手"
+        }, 
+        {
+            "role": "user",
+            "content": "介绍越南这个国家。"
+        }
     ],
-    extra_body={
-        "logits_processors": [
-            "llm_block_chinese.logits_processor.filter_chinese"
-        ]
-    }
+
+    model=model,
 )
 
-print(completion_response.choices[0].message.content)
-    
+print("Chat completion results:")
+print(chat_completion.choices[0].message.content)
