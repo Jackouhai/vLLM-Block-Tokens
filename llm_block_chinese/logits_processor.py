@@ -11,7 +11,7 @@ class ChineseBlockLogitsProcessor(LogitsProcessor):
     
     def __init__(self, vllm_config, device, is_pin_memory):
         """
-        Khởi tạo tokenizer và các biến. KHÔNG tạo mask ở đây.
+        Khởi tạo tokenizer và các biến.
         """
         self.tokenizer = get_tokenizer(MODEL_NAME)
         self.mask = None
@@ -20,9 +20,6 @@ class ChineseBlockLogitsProcessor(LogitsProcessor):
         return False
 
     def update_state(self, batch_update: Optional[BatchUpdate]):
-        """
-        Phương thức trừu tượng bắt buộc. Pass vì không cần theo dõi trạng thái.
-        """
         pass
     
     def apply(self, logits: torch.Tensor) -> torch.Tensor:
