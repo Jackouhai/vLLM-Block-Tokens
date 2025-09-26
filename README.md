@@ -59,15 +59,15 @@ uv sync
 ### 3. Run vLLM server
 
 ```bash
-source .venv/bin/activate
-python -m vllm.entrypoints.openai.api_server \
-  --model Qwen/Qwen2.5-1.5B-Instruct \
+#New Version
+vllm serve Qwen/Qwen2.5-1.5B-Instruct \
+  --gpu-memory-utilization 0.6 \
   --served-model-name qwen2.5 \
-  --port 8000 \
-  --logits-processor-pattern "llm_block_chinese\.logits_processor\.filter_chinese"
+  --logits-processors "llm_block_chinese.logits_processor:ChineseBlockLogitsProcessor"
 ```
 If not enough vram (e.g., NVIDIA T600-Laptop):
 ```bash
+#Old Version
 source .venv/bin/activate
 python -m vllm.entrypoints.openai.api_server \
   --model Qwen/Qwen2.5-1.5B-Instruct \
