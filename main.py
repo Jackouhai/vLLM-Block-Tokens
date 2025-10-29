@@ -20,9 +20,15 @@
 import re
 from openai import OpenAI
 
+# Compile pattern một lần duy nhất khi load module (tối ưu hiệu năng)
+CHINESE_CHAR_PATTERN = re.compile(
+    r'[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3000-\u303f]'
+)
+
 def filter_chinese_characters(text):
     """
-    Lọc bỏ tất cả các ký tự tiếng Trung khỏi text.
+    Lọc bỏ các ký tự tiếng Trung khỏi text, giữ lại tất cả ký tự khác.
+    Sử dụng regex pre-compiled để tối ưu hiệu năng.
     
     Args:
         text (str): Văn bản cần lọc
@@ -30,22 +36,15 @@ def filter_chinese_characters(text):
     Returns:
         str: Văn bản đã loại bỏ các ký tự tiếng Trung
     """
-    # Unicode ranges cho tiếng Trung:
-    # \u4e00-\u9fff: CJK Unified Ideographs (chữ Hán phổ biến)
-    # \u3400-\u4dbf: CJK Unified Ideographs Extension A
-    # \u20000-\u2a6df: CJK Unified Ideographs Extension B
-    # \uf900-\ufaff: CJK Compatibility Ideographs
-    # \u3000-\u303f: CJK Symbols and Punctuation
+    # Xóa các ký tự chữ Hán (CHỈ xóa các ký tự trong các range tiếng Trung)
+    filtered_text = CHINESE_CHAR_PATTERN.sub('', text)
     
-    # Pattern để match các ký tự tiếng Trung
-    chinese_pattern = re.compile(
-        r'[\u4e00-\u9fff\u3400-\u4dbf\u20000-\u2a6df\uf900-\ufaff\u3000-\u303f]+'
-    )
+    # Xóa các dấu câu tiếng Trung (full-width)
+    chinese_punctuation = '。""''「」『』【】《》〈〉、…—～·'
+    for punct in chinese_punctuation:
+        filtered_text = filtered_text.replace(punct, '')
     
-    # Loại bỏ các ký tự tiếng Trung
-    filtered_text = chinese_pattern.sub('', text)
-    
-    # Loại bỏ khoảng trắng thừa
+    # Chuẩn hóa: xóa khoảng trắng thừa
     filtered_text = re.sub(r'\s+', ' ', filtered_text).strip()
     
     return filtered_text
@@ -76,12 +75,17 @@ client = OpenAI(
 )
 
 def get_safe_response(completion):
-    raw_content = completion.choices[0].message.content
+    """
+    Can thiệp ngay lúc lấy response từ vLLM.
+    Loại bỏ tất cả các ký tự tiếng Trung khỏi response.
+    """
+    raw_content = completion.choices[0].message.content + ",xin chào tôi tên là A hiện tại tôi đang là sinh viên"
+    print("Response gốc:", raw_content )
+    print("=" * 50)
     
-    if contains_chinese(raw_content):
-        return "Xin lỗi tôi không thể trả lời câu hỏi này"
-    else:
-        return raw_content
+    # Loại bỏ ký tự tiếng Trung
+    filtered = filter_chinese_characters(raw_content)
+    return filtered
 
 
 model = "qwen2.5"
@@ -90,19 +94,20 @@ chat_completion = client.chat.completions.create(
     messages=[
         {
             "role": "system",
-            "content": "bạn là trợ lý ảo tiếng Trung."
+            "content": "你是一位得力助手"
         }, 
         {
             "role": "user",
-            "content": "hãy viết cho tôi 1 câu xin chào tiếng trung"
+            "content": "介绍越南这个国家"
         }
     ],
 
     model=model,
 )
 
-# Can thiệp NGAY LÚC lấy response
+# Can thiệp NGAY LÚC lấy response - loại bỏ ký tự tiếng Trung
 original_response = get_safe_response(chat_completion)
 
+print("\nResponse đã lọc (không có tiếng Trung):")
 print(original_response)
 

@@ -65,6 +65,14 @@ vllm serve Qwen/Qwen2.5-1.5B-Instruct \
   --served-model-name qwen2.5 \
   --logits-processors "llm_block_chinese.logits_processor:ChineseBlockLogitsProcessor"
 ```
+
+```bash
+#Without logits-processors
+vllm serve Qwen/Qwen2.5-1.5B-Instruct \
+  --gpu-memory-utilization 0.6 \
+  --served-model-name qwen2.5 
+```
+
 If not enough vram (e.g., NVIDIA T600-Laptop):
 ```bash
 #Old Version
