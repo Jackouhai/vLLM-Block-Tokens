@@ -3,8 +3,7 @@ from vllm.v1.sample.logits_processor import LogitsProcessor
 from vllm.transformers_utils.tokenizer import get_tokenizer
 from typing import Optional
 from vllm.v1.sample.logits_processor import BatchUpdate
-# Import thêm VllmConfig nếu cần type hint, nhưng không dùng nó trong __init__
-# from vllm.config import VllmConfig 
+
 
 MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
 
@@ -12,20 +11,15 @@ class ChineseBlockLogitsProcessor(LogitsProcessor):
     
     def __init__(self, vllm_config, device, is_pin_memory):
         """
-        Khởi tạo tokenizer và các biến. KHÔNG tạo mask ở đây.
+        Khởi tạo tokenizer và các biến.
         """
         self.tokenizer = get_tokenizer(MODEL_NAME)
         self.mask = None
-        # Có thể lưu device nếu bạn muốn, nhưng tốt nhất là lấy từ logits trong apply()
-        # self.device = device 
 
     def is_argmax_invariant(self) -> bool:
         return False
 
     def update_state(self, batch_update: Optional[BatchUpdate]):
-        """
-        Phương thức trừu tượng bắt buộc. Pass vì không cần theo dõi trạng thái.
-        """
         pass
     
     def apply(self, logits: torch.Tensor) -> torch.Tensor:
@@ -33,8 +27,6 @@ class ChineseBlockLogitsProcessor(LogitsProcessor):
         Áp dụng Logits Processor. Dùng lazy initialization cho mask.
         """
         if self.mask is None:
-            # Khởi tạo Mask (chỉ chạy lần đầu tiên)
-            # Lấy device TỪ logits (đảm bảo đúng device)
             device = logits.device
             vocab_size = logits.size(-1)
             all_token_ids = torch.arange(vocab_size)
