@@ -25,6 +25,7 @@ CHINESE_CHAR_PATTERN = re.compile(
     r'[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3000-\u303f]'
 )
 
+# hàm chính để lọc token chinese từ response
 def filter_chinese_characters(text):
     """
     Lọc bỏ các ký tự tiếng Trung khỏi text, giữ lại tất cả ký tự khác.
@@ -44,7 +45,7 @@ def filter_chinese_characters(text):
     for punct in chinese_punctuation:
         filtered_text = filtered_text.replace(punct, '')
     
-    # Chuẩn hóa: xóa khoảng trắng thừa
+    # xóa khoảng trắng thừa
     filtered_text = re.sub(r'\s+', ' ', filtered_text).strip()
     
     return filtered_text
@@ -79,7 +80,7 @@ def get_safe_response(completion):
     Can thiệp ngay lúc lấy response từ vLLM.
     Loại bỏ tất cả các ký tự tiếng Trung khỏi response.
     """
-    raw_content = completion.choices[0].message.content + ",xin chào tôi tên là A hiện tại tôi đang là sinh viên"
+    raw_content = completion.choices[0].message.content + ",xin chào tôi tên là A, 个国家 hiện tại tôi đang là sinh viên"
     print("Response gốc:", raw_content )
     print("=" * 50)
     
